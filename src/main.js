@@ -11,7 +11,15 @@ import router from './router'
 // 引入Axios
 import axios from '@/plugins/axios.js'
 
+// 引入ElementPlus图标
+import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+
 const app = createApp(App)
+
+// 批量注册ElementPlus图标
+for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+    app.component(key, component)
+}
 
 app.use(createPinia())
 app.use(router)

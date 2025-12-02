@@ -1,7 +1,6 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { ElMessage } from 'element-plus'
-import {useRouter} from "vue-router";
 import router from "@/router/index.js";
 import qs from "qs";
 
@@ -35,18 +34,12 @@ const handleLogin = async () => {
             // 这里执行实际的登录逻辑
             // 发送Axios请求
             axios.post('/passport/login', qs.stringify(loginForm)).then((res) => {
-                if (res.data.code === 200) {
-                    ElMessage.success('登录成功')
-                    // 将Token存储到localStorage中
-                    localStorage.setItem('authtoken', res.data.data)
-                    // 跳转到后台首页
-                    // 从vue-router导入useRouter钩子，并执行push方法进行路由跳转
-                    router.push('/admin/index')
-                } else {
-                    ElMessage.error(res.data.message)
-                }
-            }).catch((error) => {
-                ElMessage.error(error.message)
+                ElMessage.success('登录成功')
+                // 将Token存储到localStorage中
+                // Axios响应拦截器处理，res即后端响应给前端的数据，不再是res.data.data
+                localStorage.setItem('authtoken', res.data)
+                // 跳转到后台首页
+                router.push('/admin/index')
             })
         } else {
             ElMessage.error('请正确填写表单信息')
@@ -66,26 +59,27 @@ const resetForm = () => {
         <el-main>
             <el-row justify="center">
                 <el-col :span="8">
-                    <el-card>
+                    <el-card style="margin-top: 5rem">
                         <template #header>
-                            <div class="card-header">
-                                <span>用户登录</span>
+                            <div style="text-align: center; padding: 0.5rem 0">
+                                <h2 style="margin-top: 0; margin-bottom: 10px">SAdmin后台管理系统</h2>
+                                <span>欢迎使用SAdmin后台管理系统，请先登录</span>
                             </div>
                         </template>
 
-                        <el-form ref="loginFormRef" :model="loginForm" :rules="loginRules" label-width="80px" label-position="left">
-                            <el-form-item label="账户账号" prop="username">
+                        <el-form ref="loginFormRef" :model="loginForm" :rules="loginRules" label-width="80px" label-position="top">
+                            <el-form-item label="账户账号" prop="username" size="large">
                                 <el-input v-model="loginForm.username" placeholder="请输入账户账号"/>
                             </el-form-item>
 
-                            <el-form-item label="账户密码" prop="password">
+                            <el-form-item label="账户密码" prop="password" size="large">
                                 <el-input v-model="loginForm.password" type="password" placeholder="请输入账户密码" show-password/>
                             </el-form-item>
 
-                            <el-form-item>
-                                <el-button type="primary" @click="handleLogin">登录</el-button>
-                                <el-button @click="resetForm">重置</el-button>
-                            </el-form-item>
+                            <div style="width: 100%; text-align: center">
+                                <el-button type="primary" size="large" @click="handleLogin">登录</el-button>
+                                <el-button size="large" @click="resetForm">重置</el-button>
+                            </div>
                         </el-form>
                     </el-card>
                 </el-col>
@@ -93,11 +87,3 @@ const resetForm = () => {
         </el-main>
     </el-container>
 </template>
-
-<style scoped>
-.card-header {
-    text-align: center;
-    font-size: 18px;
-    font-weight: bold;
-}
-</style>
