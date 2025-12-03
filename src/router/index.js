@@ -25,7 +25,17 @@ const router = createRouter({
                     // 后台首页
                     path: 'index',  // 子路由路径前不能加/号，访问路径为父路由路径+/子路由路径
                     component: () => import('@/views/Index.vue'),
-                }
+                },
+                {
+                    // 部门管理
+                    path: 'dept/list',
+                    component: () => import('@/views/dept/List.vue'),
+                },
+                {
+                    // 添加管理
+                    path: 'dept/add',
+                    component: () => import('@/views/dept/Add.vue'),
+                },
             ]
         },
     ],

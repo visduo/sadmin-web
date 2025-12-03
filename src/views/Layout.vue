@@ -22,7 +22,7 @@ const menuData = ref([
             {
                 id: 13,
                 title: '部门管理',
-                path: '/dept'
+                path: '/dept/list'
             },
             {
                 id: 20,

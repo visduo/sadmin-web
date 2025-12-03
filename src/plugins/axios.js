@@ -38,9 +38,13 @@ _axios.interceptors.response.use(
             localStorage.clear()
             ElMessage.error("请先登录")
             router.push("/login")
+            // 抛出错误
+            return Promise.reject(response.data.message)
         } else if(response.data.code !== 200) {
             // 响应数据中code不为200，则提示错误信息
             ElMessage.error(response.data.message)
+            // 抛出错误
+            return Promise.reject(response.data.message)
         }
 
         // 直接返回响应数据，简化接口调用处的取值逻辑
