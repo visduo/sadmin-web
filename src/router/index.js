@@ -29,18 +29,24 @@ const router = createRouter({
                 {
                     // 部门管理
                     path: 'dept/list',
-                    component: () => import('@/views/dept/List.vue'),
+                    component: () => import('@/views/Dept.vue'),
                 },
                 {
-                    // 添加管理
-                    path: 'dept/add',
-                    component: () => import('@/views/dept/Add.vue'),
+                    // 角色管理
+                    path: 'role/list',
+                    component: () => import('@/views/Role.vue'),
                 },
             ]
         },
     ],
 })
 
+// 前置守卫
+// 在路由跳转之前，拦截器
+// to：要跳转到哪一个路由/页面去
+// from：从哪里跳转过来的
+// next：函数 -> 告诉路由守卫我要继续往下去执行
+//  结束拦截
 router.beforeEach((to, from, next) => {
     let authtoken = localStorage.getItem("authtoken")
     // 通过to.path获取访问的路由地址，并进行判断

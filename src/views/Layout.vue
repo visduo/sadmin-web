@@ -17,7 +17,7 @@ const menuData = ref([
             {
                 id: 12,
                 title: '角色管理',
-                path: '/role'
+                path: '/role/list'
             },
             {
                 id: 13,

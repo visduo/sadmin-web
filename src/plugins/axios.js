@@ -51,7 +51,7 @@ _axios.interceptors.response.use(
         return response.data;
     },
     function(error) {
-        // 处理响应失败（HTTP状态码非2xx）
+        // 处理响应失败（HTTP状态码非2xx、500）
         ElMessage.error(error.message)
         return Promise.reject(error);
     }
