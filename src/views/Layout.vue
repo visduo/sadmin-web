@@ -12,7 +12,7 @@ const menuData = ref([
             {
                 id: 11,
                 title: '用户管理',
-                path: '/users'
+                path: '/users/list'
             },
             {
                 id: 12,

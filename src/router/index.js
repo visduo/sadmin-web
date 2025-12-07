@@ -36,6 +36,11 @@ const router = createRouter({
                     path: 'role/list',
                     component: () => import('@/views/Role.vue'),
                 },
+                {
+                    // 用户管理
+                    path: 'users/list',
+                    component: () => import('@/views/Users.vue'),
+                },
             ]
         },
     ],
