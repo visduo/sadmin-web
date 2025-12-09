@@ -2,52 +2,10 @@
 import { ref } from 'vue'
 import {useCurrentUserStore} from "@/stores/currentUser.js";
 import router from "@/router/index.js";
+import {toTreeList} from "@/plugins/TreeUtil.js";
 
 // 模拟菜单数据
-const menuData = ref([
-    {
-        id: 1,
-        title: '系统管理',
-        children: [
-            {
-                id: 11,
-                title: '用户管理',
-                path: '/users/list'
-            },
-            {
-                id: 12,
-                title: '角色管理',
-                path: '/role/list'
-            },
-            {
-                id: 13,
-                title: '部门管理',
-                path: '/dept/list'
-            },
-            {
-                id: 20,
-                title: '权限管理',
-                path: '/perms/list'
-            }
-        ]
-    },
-    {
-        id: 2,
-        title: '日志管理',
-        children: [
-            {
-                id: 21,
-                title: '登录日志',
-                path: '/loginlog'
-            },
-            {
-                id: 22,
-                title: '操作日志',
-                path: '/actionlog'
-            }
-        ]
-    }
-])
+const menuData = useCurrentUserStore().currentMenu
 
 // 发送请求，获取登录用户信息实体
 axios.get('/passport/currentUser').then((res) => {
@@ -80,18 +38,18 @@ const logout = () => {
                 <template v-for="item in menuData" :key="item.id">
                     <el-sub-menu v-if="item.children && item.children.length > 0" :index="item.id">
                         <template #title>
-                            <span>{{ item.title }}</span>
+                            <span>{{ item.name }}</span>
                         </template>
                         <!--
-                            index注意路径拼接前缀/admin
+                            index注意路径拼接前缀/admin/
                         -->
-                        <el-menu-item v-for="child in item.children" :key="child.id" :index="'/admin' + child.path">
-                            {{ child.title }}
+                        <el-menu-item v-for="child in item.children" :key="child.id" :index="'/admin/' + child.path">
+                            {{ child.name }}
                         </el-menu-item>
                     </el-sub-menu>
 
-                    <el-menu-item v-else :index="'/admin' + item.path">
-                        <template #title>{{ item.title }}</template>
+                    <el-menu-item v-else :index="'/admin/' + item.path">
+                        <template #title>{{ item.name }}</template>
                     </el-menu-item>
                 </template>
             </el-menu>
