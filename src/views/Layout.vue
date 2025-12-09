@@ -27,7 +27,7 @@ const menuData = ref([
             {
                 id: 20,
                 title: '权限管理',
-                path: '/perms'
+                path: '/perms/list'
             }
         ]
     },

@@ -41,6 +41,11 @@ const router = createRouter({
                     path: 'users/list',
                     component: () => import('@/views/Users.vue'),
                 },
+                {
+                    // 权限管理
+                    path: 'perms/list',
+                    component: () => import('@/views/Perms.vue'),
+                },
             ]
         },
     ],

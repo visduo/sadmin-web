@@ -1,6 +1,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { toTreeList } from '@/plugins/TreeUtil.js'
 import qs from "qs";
 
 // 分页数据
@@ -55,6 +56,12 @@ const editFormRules = {
         { min: 1, max: 200, message: '长度应在1到200个字符之间', trigger: 'blur' }
     ]
 }
+
+// 授权对话框相关
+const authDialogVisible = ref(false)
+const permTreeData = ref([])
+const defaultCheckedKeys = ref([])
+const treeRef = ref()
 
 // 获取角色列表
 const fetchRoleList = () => {
@@ -176,6 +183,52 @@ const handleDelete = (id) => {
     })
 }
 
+// 显示授权对话框
+const showAuthDialog = (row) => {
+    // 保存当前角色ID用于后续操作
+    editFormData.id = row.id;
+
+    // 获取全量权限列表
+    axios.get('/perms/list').then((res) => {
+        // 将扁平数据转换为树形结构
+        permTreeData.value = toTreeList(res.data)
+
+        // 获取角色详细信息，包括权限列表
+        axios.get(`/role/get/${row.id}`).then((response) => {
+            // 设置默认选中的权限
+            // 处理perms可能不存在或为逗号分隔字符串的情况
+            let permIds = [];
+            if (response.data.perms) {
+                // perms是逗号分隔的字符串格式，例如"1,2,3,4,5"
+                permIds = response.data.perms.split(',').map(id => parseInt(id.trim())).filter(id => !isNaN(id));
+            }
+            defaultCheckedKeys.value = permIds;
+
+            // 显示授权对话框
+            authDialogVisible.value = true
+        })
+    })
+}
+
+// 提交授权表单
+const submitAuthForm = () => {
+    // 获取选中的权限ID数组
+    const checkedKeys = treeRef.value.getCheckedKeys()
+
+    // 发送请求更新角色权限
+    axios.put(`/role/updatePerms/${editFormData.id}`, qs.stringify({ perms: checkedKeys.join(',') })).then((res) => {
+        ElMessage.success('授权成功')
+        authDialogVisible.value = false
+        fetchRoleList()
+    })
+}
+
+// 重置授权表单
+const resetAuthForm = () => {
+    defaultCheckedKeys.value = []
+    permTreeData.value = []
+}
+
 // 初始化加载数据
 onMounted(() => {
     fetchRoleList()
@@ -215,12 +268,10 @@ onMounted(() => {
                 <el-table-column label="操作">
                     <template #default="scope">
                         <el-button type="primary" size="small" @click="showEditDialog(scope.row)">编辑</el-button>
-                        <el-button
-                            type="danger"
-                            size="small"
-                            @click="handleDelete(scope.row.id)"
-                            :disabled="scope.row.id === 1"
-                        >
+                        <el-button type="success" size="small" @click="showAuthDialog(scope.row)" :disabled="scope.row.id === 1">
+                            授权
+                        </el-button>
+                        <el-button type="danger" size="small" @click="handleDelete(scope.row.id)" :disabled="scope.row.id === 1">
                             删除
                         </el-button>
                     </template>
@@ -270,6 +321,27 @@ onMounted(() => {
                 <div style="width: 100%; text-align: center">
                     <el-button @click="editDialogVisible = false">取消</el-button>
                     <el-button type="primary" @click="submitEditForm">确定</el-button>
+                </div>
+            </template>
+        </el-dialog>
+
+        <!-- 授权对话框 -->
+        <el-dialog v-model="authDialogVisible" title="角色授权" width="500px" @close="resetAuthForm">
+            <el-tree
+                ref="treeRef"
+                :data="permTreeData"
+                show-checkbox
+                node-key="id"
+                :props="{ label: 'name', children: 'children' }"
+                :default-checked-keys="defaultCheckedKeys"
+                :default-expand-all="false"
+                style="width: 100%"
+            />
+
+            <template #footer>
+                <div style="width: 100%; text-align: center">
+                    <el-button @click="authDialogVisible = false">取消</el-button>
+                    <el-button type="primary" @click="submitAuthForm">确定</el-button>
                 </div>
             </template>
         </el-dialog>
